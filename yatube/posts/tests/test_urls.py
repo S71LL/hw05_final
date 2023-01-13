@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
 from http import HTTPStatus
+from django.core.cache import cache
 
 from posts.models import Post, Group
 
@@ -58,6 +59,7 @@ class PostsURLTests(TestCase):
             '/unexisting_page/': 'core/404.html',
         }
         for address, teamplate in templates_url_names.items():
+            cache.clear()
             with self.subTest(address=address):
                 responce = self.authorized_client.get(address)
                 self.assertTemplateUsed(responce, teamplate)
