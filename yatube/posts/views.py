@@ -37,16 +37,13 @@ def profile(request, username):
     posts_quantity = author.posts_of_author.count()
     page_obj = page_maker(request, posts)
     user = request.user
-    if Follow.objects.filter(user_id=user.id, author_id=author.id).exists():
-        following = True
-    else:
-        following = False
+    following = Follow.objects.filter(user_id=user.id,
+                                      author_id=author.id).exists()
     context = {
-        'username': author,
+        'author': author,
         'page_obj': page_obj,
         'quantity': posts_quantity,
         'following': following,
-        'current_user': user
     }
     return render(request, templates, context)
 
@@ -143,6 +140,5 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     user = request.user
-    unfollow = Follow.objects.get(user=user, author=author)
-    unfollow.delete()
+    Follow.objects.filter(user=user, author=author).delete()
     return redirect('posts:follow_index')

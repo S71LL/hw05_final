@@ -1,11 +1,10 @@
-import tempfile
-import shutil
-
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+import tempfile
+import shutil
 
 from ..models import Group, Post
 

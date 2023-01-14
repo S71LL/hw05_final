@@ -1,6 +1,3 @@
-import tempfile
-import shutil
-
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -8,6 +5,8 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django import forms
 from django.core.cache import cache
+import tempfile
+import shutil
 
 from posts.models import Post, Group, Comment, Follow
 
@@ -105,12 +104,9 @@ class PostsURLTests(TestCase):
     def test_home_page_show_correct_context(self):
         response = self.authorized_client.get(reverse('posts:index'))
         first_object = response.context['page_obj'][0]
-        post_text_0 = first_object.text
-        post_author_0 = first_object.author.username
-        post_img_0 = first_object.image
-        self.assertEqual(post_text_0, 'Тестовый пост')
-        self.assertEqual(post_author_0, 'auth')
-        self.assertIsNotNone(post_img_0)
+        self.assertEqual(first_object.text, 'Тестовый пост')
+        self.assertEqual(first_object.author.username, 'auth')
+        self.assertIsNotNone(first_object.image)
 
     def test_group_page_show_correct_context(self):
         response = self.authorized_client.get(
@@ -163,14 +159,15 @@ class PostsURLTests(TestCase):
     def test_index_page_cache(self):
         cached_page = self.authorized_client.get(
             reverse('posts:index')).content
-        form_data = {
-            'text': 'Новый пост',
-        }
-        self.authorized_client.post(
-            reverse('posts:post_create'), data=form_data)
+        Post.objects.create(text='Новый пост', author=self.user)
         response = self.authorized_client.get(
             reverse('posts:index')).content
         self.assertEqual(cached_page, response)
+        cache.clear()
+        updated_response = self.authorized_client.get(
+            reverse('posts:index')
+        ).content
+        self.assertNotEqual(cached_page, updated_response)
 
     def test_following(self):
         self.authorized_client.get(reverse(

@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
-{% block title %}Все посты пользователя {{ username.get_full_name }}{% endblock title %}
+{% block title %}Все посты пользователя {{ author.get_full_name }}{% endblock title %}
 {% block content %}
 <main>
     <div class="container py-5">    
-    <h1>Все посты пользователя {{ username.get_full_name }}</h1>    
+    <h1>Все посты пользователя {{ author.get_full_name }}</h1>    
     <h3>Всего постов: {{ quantity }} </h3>
-    {% if username != current_user %}
+    {% if author != user %}
         {% if following %}
         <a
             class="btn btn-lg btn-light"
-            href="{% url 'posts:profile_unfollow' username %}" role="button"
+            href="{% url 'posts:profile_unfollow' author %}" role="button"
         >
             Отписаться
         </a>
         {% else %}
             <a
             class="btn btn-lg btn-primary"
-            href="{% url 'posts:profile_follow' username %}" role="button"
+            href="{% url 'posts:profile_follow' author %}" role="button"
             >
             Подписаться
             </a>
